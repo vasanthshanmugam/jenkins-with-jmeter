@@ -577,5 +577,5 @@ They only use the shared test application, so deleting them does not affect the 
 | All requests fail, `Connection refused` | Missing `-Jhost=perf-app -Jport=8080`, or the app is stopped | Add the options / on the Mac `docker compose start perf-app` |
 | `… results/html … as folder is not empty` | Old report folder still in the workspace | Keep `rm -rf results` + `mkdir results` at the start |
 | `"resultData" is null` in the report step | The test recorded 0 requests | Look further up for `summary = 0`; check THREADS/DURATION (Level 6 adds a check for this) |
-| Report page shows empty tables | JavaScript blocked in reports | See MAC-LAB-SETUP.md §11 |
+| Report page shows empty tables | JavaScript blocked in reports | See docs/09 §9.4 (Content-Security-Policy) |
 | Unexpected failures | Errors/delays still switched on in the app | Reset chaos (Level 5, step 3) |

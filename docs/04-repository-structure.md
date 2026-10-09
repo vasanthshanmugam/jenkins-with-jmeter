@@ -8,7 +8,6 @@ jenkins-with-jmeter/
 ├── README.md
 ├── BASICS-LEARNING-PATH.md             # Levels 0-8: from one JMeter command to the full pipeline
 ├── CREATE-NEW-PIPELINE.md              # creating a job for the full pipeline
-├── MAC-LAB-SETUP.md                    # what runs on the lab Mac, passwords, commands
 ├── pipelines/                          # finished script for each learning level (1-7)
 ├── docker-compose.yml                  # lab infrastructure on the Mac
 ├── .env.example                        # template for local, non-committed settings

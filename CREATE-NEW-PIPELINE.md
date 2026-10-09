@@ -107,7 +107,7 @@ All parameters:
 | `Repository not found` / authentication error | Wrong URL, or the repository was made private | Fix the URL, or add a read-only GitHub token as a credential (docs/04 §4.3) |
 | Build never starts | No node has the label `jmeter` | *Manage Jenkins → Nodes → Built-In Node* → label `jmeter` |
 | Stage 2: `Target … is not reachable` | API container stopped | On the Mac: `docker compose start perf-app` |
-| Unexpected FAILURE at stage 8 | Errors or delays still switched on in the API | `curl http://192.168.0.19:8081/admin/chaos`, then reset (see MAC-LAB-SETUP.md §8) |
-| JMeter Dashboard tables are empty | JavaScript in reports is blocked | See MAC-LAB-SETUP.md §11 |
+| Unexpected FAILURE at stage 8 | Errors or delays still switched on in the API | `curl http://192.168.0.19:8081/admin/chaos`, then reset (see docs/07 §7.4) |
+| JMeter Dashboard tables are empty | JavaScript in reports is blocked | See docs/09 §9.4 (Content-Security-Policy) |
 
-See also: [MAC-LAB-SETUP.md](MAC-LAB-SETUP.md) · [docs/08-execution-and-validation.md](docs/08-execution-and-validation.md)
+See also: [BASICS-LEARNING-PATH.md](BASICS-LEARNING-PATH.md) · [docs/08-execution-and-validation.md](docs/08-execution-and-validation.md)

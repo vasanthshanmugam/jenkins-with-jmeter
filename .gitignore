@@ -20,3 +20,6 @@ Thumbs.db
 .idea/
 .vscode/
 __pycache__/
+
+# Trainer-only notes about the lab Mac (IP, user, SSH) - kept out of the public repo
+MAC-LAB-SETUP.md
