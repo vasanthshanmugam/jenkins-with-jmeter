@@ -1,0 +1,74 @@
+// Level 7 - Pipeline as code: this file lives in Git and the job reads it from there.
+// Job > Configure > Pipeline > Definition = "Pipeline script from SCM", Script Path = pipelines/level-7-Jenkinsfile
+// Only change from Level 6: "checkout scm" replaces the git step - the job already knows the repository.
+pipeline {
+    agent { label 'jmeter' }
+
+    parameters {
+        string(name: 'THREADS',  defaultValue: '5',  description: 'Number of virtual users')
+        string(name: 'RAMPUP',   defaultValue: '5',  description: 'Seconds to start all users')
+        string(name: 'DURATION', defaultValue: '60', description: 'Test length in seconds')
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm      // same repository and branch as configured in the job
+            }
+        }
+
+        stage('Run JMeter test') {
+            steps {
+                sh '''
+                    rm -rf results
+                    mkdir results
+                    jmeter -n -t test-plans/shoplite-api.jmx \
+                      -Jhost=perf-app -Jport=8080 \
+                      -Jthreads="$THREADS" -Jrampup="$RAMPUP" -Jduration="$DURATION" \
+                      -l results/results.jtl \
+                      -j results/jmeter.log
+                '''
+            }
+        }
+
+        stage('Archive results') {
+            steps {
+                archiveArtifacts artifacts: 'results/*.jtl, results/*.log'
+            }
+        }
+
+        stage('HTML report') {
+            steps {
+                sh 'jmeter -g results/results.jtl -o results/html'
+                publishHTML(target: [
+                    reportName : 'JMeter Report',
+                    reportDir  : 'results/html',
+                    reportFiles: 'index.html',
+                    keepAll    : true,
+                    allowMissing: false,
+                    alwaysLinkToLastBuild: true
+                ])
+            }
+        }
+
+        stage('Check results') {
+            steps {
+                sh '''
+                    total=$(tail -n +2 results/results.jtl | wc -l)
+                    failed=$(tail -n +2 results/results.jtl | grep -c ',false,' || true)
+                    echo "Requests: $total   Failed: $failed"
+
+                    if [ "$total" -eq 0 ]; then
+                        echo "FAIL: no requests were recorded - did the test run?"
+                        exit 1
+                    fi
+                    if [ "$failed" -gt 0 ]; then
+                        echo "FAIL: $failed request(s) failed - open the JMeter Report, Errors table"
+                        exit 1
+                    fi
+                    echo "PASS: all requests succeeded"
+                '''
+            }
+        }
+    }
+}
