@@ -8,6 +8,15 @@ pipeline {
         string(name: 'DURATION', defaultValue: '60', description: 'Test length in seconds')
     }
 
+    // Copy the parameters into environment variables for the shell ($THREADS ...).
+    // params.X always has a value (the default on the very first build); the automatic
+    // environment variables for parameters are empty on the first build.
+    environment {
+        THREADS  = "${params.THREADS}"
+        RAMPUP   = "${params.RAMPUP}"
+        DURATION = "${params.DURATION}"
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -17,7 +26,6 @@ pipeline {
 
         stage('Run JMeter test') {
             steps {
-                // Build parameters are available to the shell as environment variables: $THREADS etc.
                 // -Jthreads=... sets the JMeter property that the test plan reads with ${__P(threads,5)}
                 sh '''
                     echo "Load: $THREADS users, ramp-up $RAMPUP s, duration $DURATION s"

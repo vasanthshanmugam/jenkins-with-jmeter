@@ -2,6 +2,8 @@
 * text=auto
 *.sh       text eol=lf
 Jenkinsfile text eol=lf
+*Jenkinsfile text eol=lf
+*.groovy   text eol=lf
 Dockerfile text eol=lf
 *.yml      text eol=lf
 *.properties text eol=lf
