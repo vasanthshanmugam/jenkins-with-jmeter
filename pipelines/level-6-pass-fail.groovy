@@ -34,6 +34,14 @@ pipeline {
                       -Jthreads="$THREADS" -Jrampup="$RAMPUP" -Jduration="$DURATION" \
                       -l results/results.jtl \
                       -j results/jmeter.log
+
+                    # Check 1: did the test record any requests at all?
+                    total=$(tail -n +2 results/results.jtl | wc -l)
+                    echo "Requests recorded: $total"
+                    if [ "$total" -eq 0 ]; then
+                        echo "FAIL: no requests were recorded - check THREADS/DURATION and results/jmeter.log"
+                        exit 1
+                    fi
                 '''
             }
         }
@@ -60,6 +68,7 @@ pipeline {
 
         stage('Check results') {
             steps {
+                // Check 2: did any request fail?
                 // Each line of results.jtl (after the header) is one request.
                 // The "success" column is true or false, so failed requests contain ",false,".
                 sh '''
@@ -67,10 +76,6 @@ pipeline {
                     failed=$(tail -n +2 results/results.jtl | grep -c ',false,' || true)
                     echo "Requests: $total   Failed: $failed"
 
-                    if [ "$total" -eq 0 ]; then
-                        echo "FAIL: no requests were recorded - did the test run?"
-                        exit 1
-                    fi
                     if [ "$failed" -gt 0 ]; then
                         echo "FAIL: $failed request(s) failed - open the JMeter Report, Errors table"
                         exit 1
