@@ -23,20 +23,40 @@ own GitHub repository).
 
 ## Agenda
 
+The session runs in two parts. **Part A** builds the pipeline up from nothing, one idea per level
+([BASICS-LEARNING-PATH.md](../BASICS-LEARNING-PATH.md)); **Part B** moves to the full lab pipeline.
+Students should finish the laptop installs (docs/03 §3.5–3.7) and the JMeter GUI walkthrough
+(docs/05 §5.5) **before** the session as pre-work.
+
+### Part A – Basics (1 h 45 min)
+
+| Time | Min | Level | Trainer demo | Students do | Checkpoint |
+|---|---|---|---|---|---|
+| 0:00 | 10 | Why perf tests in CI; objectives | Show a finished full-pipeline build: stage view, dashboard, gate summary – "by the end you will build this" | – | – |
+| 0:10 | 10 | **Level 0** – JMeter by hand | `docker exec -it jenkins bash`, run the command, `head` the JTL | Same | ✅ JTL with a header + requests; can explain `-n -t -J -l` |
+| 0:20 | 10 | **Level 1** – Freestyle job | Git + Execute shell + archive | Build their own | ✅ SUCCESS; finds the JTL under Build Artifacts |
+| 0:30 | 10 | **Level 2** – First pipeline | Map each Level 1 setting to a pipeline line | Paste, build, then the `jmeterr` typo | ✅ can say why the typo build is red |
+| 0:40 | 10 | **Level 3** – Stages + archive | Stage View columns | Build; `*.csv` pattern exercise | ✅ three green stages |
+| 0:50 | 10 | **Level 4** – HTML report | Walk the dashboard Statistics table | Build; open **JMeter Report** | ✅ reads p95 and throughput from the report |
+| 1:00 | 10 | **Break** + troubleshooting desk | – | – | – |
+| 1:10 | 15 | **Level 5** – Parameters | `-J` → `${__P()}` chain; switch on chaos errors → **green build with 20 % errors** | Build with `THREADS=10`; `THREADS=ten` | ✅ explains why the build is green |
+| 1:25 | 10 | **Level 6** – Pass/fail | The `grep ',false,'` check | Normal / errors / `THREADS=ten` builds | ✅ green, red, red – each explained |
+| 1:35 | 10 | **Level 7** – Pipeline from Git | Script Path, `checkout scm` | Create job from SCM | ✅ console shows `Obtained pipelines/level-7-Jenkinsfile from git` |
+
+### Part B – The full lab pipeline (1 h 15 min)
+
 | Time | Min | Section | Trainer demo | Students do | Checkpoint |
 |---|---|---|---|---|---|
-| 0:00 | 10 | Why perf tests in CI; objectives | Show a finished build: stage view, dashboard, gate summary | – | Students can name the 8 stages |
-| 0:10 | 15 | Architecture (docs/02) | Walk the diagram; `docker ps`, workspace vs artifacts on disk | Draw the flow on paper from memory | Each student explains where the JTL lives during and after a build |
-| 0:25 | 15 | Lab check (docs/03) | `java -version`, `jmeter --version`, `curl …/health` | Same on laptop; reach `:8080` and `:8081` | ✅ all three commands work |
-| 0:40 | 25 | Test plan (docs/05) | Open JMX in GUI, explain each element, run 1 user with View Results Tree | Run in GUI, find TOKEN in a request header, break the password and observe skipped samplers | ✅ green GUI run; disable listener; `run-local … smoke` PASS |
-| 1:05 | 15 | Parameterization | Properties vs variables; `-J` precedence demo (`-Jhost`) | Run CLI with `-Jthreads=3 -Jloops=1`, count logins in the JTL | ✅ JTL has 3 × `01_Login` |
-| 1:20 | 10 | **Break** + troubleshooting desk | – | Fix install issues | – |
-| 1:30 | 30 | Jenkinsfile + first build (docs/06, 08) | Create job from SCM, first build, walk the console stage by stage | Push own repo, create own job, run first build | ✅ own build SUCCESS; can open own dashboard |
-| 2:00 | 15 | Dashboard + gates (docs/09) | Statistics table, percentiles, throughput sanity check; thresholds file | Produce SUCCESS, UNSTABLE (`GATE_OVERRIDES=p95.ms.warn=10`), FAILURE (`THREADS=abc`) | ✅ three builds with three colours, each explained |
-| 2:15 | 20 | Failure scenarios (docs/10) | Trainer injects chaos delay → threshold breach; explain the 4 failure kinds | Pairs pick 2 scenarios each, break, diagnose, fix | ✅ each pair presents one root cause in 1 minute |
-| 2:35 | 15 | Final challenge | – | See below | ✅ demonstrated to trainer |
-| 2:50 | 10 | Enterprise extensions (docs/11) + interview drill (docs/12) | Dedicated agent: move the label, show `Running on jmeter-agent-01` | Answer 3 random interview questions | – |
+| 1:45 | 10 | Architecture (docs/02) + what Level 8 adds (BASICS §Level 8) | Diagram; `Jenkinsfile` stage by stage at a glance | – | Students name what each extra stage protects against |
+| 1:55 | 15 | Full pipeline job (CREATE-NEW-PIPELINE.md) | Create job, first build | Same, own job | ✅ own build SUCCESS; dashboard opens |
+| 2:10 | 15 | Dashboard + gates (docs/09) | Percentiles, throughput sanity check; thresholds file | Produce SUCCESS, UNSTABLE (`GATE_OVERRIDES=p95.ms.warn=10`), FAILURE (`THREADS=abc`) | ✅ three builds with three colours, each explained |
+| 2:25 | 15 | Failure scenarios (docs/10) | Inject chaos delay → threshold breach; the 4 failure kinds | Pairs pick one scenario, break, diagnose, fix | ✅ each pair presents one root cause in 1 minute |
+| 2:40 | 15 | Final challenge | – | See below | ✅ demonstrated to trainer |
+| 2:55 | 5 | Wrap-up: extensions (docs/11), interview drill (docs/12) | Dedicated agent = move the label | 2 random interview questions | – |
 | 3:00 | | End | | | |
+
+**Shorter session (2 h):** run Part A Levels 0, 2, 4, 5, 6, 7 only (skip 1 and 3), then Part B without the
+failure-scenario block.
 
 ## Common mistakes to watch for (troubleshooting breaks)
 

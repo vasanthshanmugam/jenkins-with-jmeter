@@ -46,6 +46,14 @@ export JMETER_HOME=/opt/apache-jmeter-5.6.3
 ./scripts/run-local.sh load local 5 10 60
 ```
 
+## Where to start
+
+| You want to… | Read |
+|---|---|
+| Learn step by step, from one JMeter command to the full pipeline | **[BASICS-LEARNING-PATH.md](BASICS-LEARNING-PATH.md)** – Levels 0–8, scripts in [`pipelines/`](pipelines/) |
+| Create a job for the full pipeline | [CREATE-NEW-PIPELINE.md](CREATE-NEW-PIPELINE.md) |
+| Look up what runs on the lab Mac, passwords, day-to-day commands | [MAC-LAB-SETUP.md](MAC-LAB-SETUP.md) |
+
 ## Training guide
 
 | # | Document | Covers |
