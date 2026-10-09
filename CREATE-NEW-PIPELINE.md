@@ -34,7 +34,9 @@ Example job name used below: **`shoplite-perf-demo`** – any name works.
 If red text appears under *Repository URL*, Jenkins cannot reach the repository: check the URL and that
 the repository is still public.
 
-Click **Save**.
+Click **Save** – the page should switch to the job's main page. To confirm it was saved, open
+**Configure** again and check the Git URL is still there. Do not click **Build Now** before saving:
+an unsaved job fails with `No flow definition, cannot run`.
 
 > **Why "Pipeline script from SCM"?** The pipeline is versioned in Git together with the test it runs.
 > A script pasted into the Jenkins UI is not code-reviewed and is lost if the job is deleted.
@@ -100,6 +102,7 @@ All parameters:
 
 | Symptom | Cause | Fix |
 |---|---|---|
+| `ERROR: No flow definition, cannot run` (build fails instantly) | The Pipeline section was never saved – the job is empty | Job → **Configure** → fill in Step 3 → **Save**; reopen **Configure** to confirm the Git URL is still there |
 | `Couldn't find any revision to build` | Branch Specifier is `*/master` | Change it to `*/main` (job → **Configure**) |
 | `Repository not found` / authentication error | Wrong URL, or the repository was made private | Fix the URL, or add a read-only GitHub token as a credential (docs/04 §4.3) |
 | Build never starts | No node has the label `jmeter` | *Manage Jenkins → Nodes → Built-In Node* → label `jmeter` |
