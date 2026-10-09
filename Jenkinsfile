@@ -91,7 +91,7 @@ pipeline {
         RAMPUP         = "${params.RAMPUP}"
         DURATION       = "${params.DURATION}"
         THINK_TIME_MS  = "${params.THINK_TIME_MS}"
-        GATE_OVERRIDES = "${params.GATE_OVERRIDES ?: ''}"
+        // GATE_OVERRIDES is read from params directly: an empty string in this block becomes "null".
     }
 
     stages {
@@ -120,8 +120,9 @@ pipeline {
                     checkInt('RAMPUP', env.RAMPUP, 0, 600)
                     checkInt('DURATION', env.DURATION, 10, 1800)
                     checkInt('THINK_TIME_MS', env.THINK_TIME_MS, 0, 10000)
-                    if (env.GATE_OVERRIDES && !(env.GATE_OVERRIDES ==~ /([A-Za-z0-9._-]+=[A-Za-z0-9._,-]+)(\s+[A-Za-z0-9._-]+=[A-Za-z0-9._,-]+)*/)) {
-                        error("Invalid GATE_OVERRIDES='${env.GATE_OVERRIDES}': use key=value pairs separated by spaces")
+                    def overrides = params.GATE_OVERRIDES ?: ''
+                    if (overrides && !(overrides ==~ /([A-Za-z0-9._-]+=[A-Za-z0-9._,-]+)(\s+[A-Za-z0-9._-]+=[A-Za-z0-9._,-]+)*/)) {
+                        error("Invalid GATE_OVERRIDES='${overrides}': use key=value pairs separated by spaces")
                     }
 
                     // ---- required files in the workspace ----
@@ -287,7 +288,7 @@ pipeline {
             steps {
                 script {
                     perfGate('Load gate', 'results/load.jtl', 'config/thresholds-load.properties',
-                             'results/perf-gate-load.txt', env.GATE_OVERRIDES)
+                             'results/perf-gate-load.txt', params.GATE_OVERRIDES ?: '')
                 }
             }
         }
