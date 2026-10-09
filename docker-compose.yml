@@ -1,0 +1,60 @@
+# JMeter + Jenkins lab - runs on the Mac (192.168.0.19) with Docker Desktop.
+#
+#   docker compose up -d --build            # Jenkins + ShopLite API
+#   docker compose --profile agent up -d    # + dedicated JMeter agent (docs/11, needs .env)
+#
+# URLs from any machine on the LAN:
+#   Jenkins     http://192.168.0.19:8080
+#   ShopLite    http://192.168.0.19:8081/health   (for JMeter GUI on your laptop)
+# Inside the Docker network Jenkins reaches the API as http://perf-app:8080.
+name: perf-lab
+
+services:
+  jenkins:
+    build: ./docker/jenkins
+    image: perf-lab/jenkins-jmeter:2.580.1-jmeter5.6.3
+    container_name: jenkins
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      TZ: ${TZ:-Asia/Kolkata}
+      # The JMeter HTML dashboard needs JavaScript. Jenkins' default Content-Security-Policy
+      # blocks it, so the lab relaxes CSP to allow same-origin scripts only. Lab trade-off:
+      # see docs/09 before doing this on a shared/production Jenkins.
+      JAVA_OPTS: >-
+        -Dhudson.model.DirectoryBrowserSupport.CSP="sandbox allow-scripts allow-same-origin; default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:;"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+    depends_on:
+      - perf-app
+
+  perf-app:
+    build: ./app
+    image: perf-lab/shoplite-api:1.0
+    container_name: perf-app
+    restart: unless-stopped
+    ports:
+      - "8081:8080"
+    environment:
+      CHAOS_DELAY_MS: "0"
+      CHAOS_ERROR_RATE: "0"
+
+  jmeter-agent:
+    profiles: ["agent"]
+    build: ./docker/jmeter-agent
+    image: perf-lab/jmeter-agent:jdk21-jmeter5.6.3
+    container_name: jmeter-agent-01
+    restart: unless-stopped
+    environment:
+      JENKINS_URL: http://jenkins:8080
+      JENKINS_WEB_SOCKET: "true"
+      JENKINS_AGENT_NAME: ${JMETER_AGENT_NAME:-jmeter-agent-01}
+      # Copied from Manage Jenkins > Nodes > jmeter-agent-01 into .env (never committed).
+      JENKINS_SECRET: ${JMETER_AGENT_SECRET:-}
+      JENKINS_AGENT_WORKDIR: /home/jenkins/agent
+    depends_on:
+      - jenkins
+
+volumes:
+  jenkins_home:

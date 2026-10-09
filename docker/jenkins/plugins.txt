@@ -1,0 +1,15 @@
+# Plugins required by the lab Jenkinsfile (installed at image build time).
+# workflow-aggregator : Declarative Pipeline (pipeline, stages, post, when, ...)
+# git                 : "Pipeline script from SCM" and the checkout step
+# pipeline-stage-view : stage table on the job page
+# htmlpublisher       : publishHTML step -> "JMeter Dashboard" link on each build
+# timestamper         : timestamps() option in the console log
+# credentials-binding : withCredentials step (secrets never go into Git)
+# ws-cleanup          : cleanWs step
+workflow-aggregator
+git
+pipeline-stage-view
+htmlpublisher
+timestamper
+credentials-binding
+ws-cleanup
